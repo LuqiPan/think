@@ -5,9 +5,10 @@ import { jwtVerify, createRemoteJWKSet } from "jose";
 
 export class MyAgent extends Think<Env> {
   getModel() {
-    return createWorkersAI({ binding: this.env.AI })(
-      "@cf/moonshotai/kimi-k2.6",
-    );
+    return createWorkersAI({
+      binding: this.env.AI,
+      gateway: { id: this.env.AI_GATEWAY_ID },
+    })(this.env.AI_GATEWAY_MODEL);
   }
 }
 
