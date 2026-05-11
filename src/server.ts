@@ -1,0 +1,61 @@
+import { Think } from "@cloudflare/think";
+import { createWorkersAI } from "workers-ai-provider";
+import { routeAgentRequest } from "agents";
+import { jwtVerify, createRemoteJWKSet } from "jose";
+
+export class MyAgent extends Think<Env> {
+  getModel() {
+    return createWorkersAI({ binding: this.env.AI })(
+      "@cf/meta/llama-3.2-1b-instruct",
+    );
+  }
+}
+
+export default {
+  async fetch(request: Request, env: Env) {
+    // Verify the POLICY_AUD environment variable is set
+    if (!env.POLICY_AUD) {
+      return new Response("Missing required audience", {
+        status: 403,
+        headers: { "Content-Type": "text/plain" },
+      });
+    }
+
+    // Get the JWT from the request headers
+    const token = request.headers.get("cf-access-jwt-assertion");
+
+    // Check if token exists
+    if (!token) {
+      return new Response("Missing required CF Access JWT", {
+        status: 403,
+        headers: { "Content-Type": "text/plain" },
+      });
+    }
+
+
+    try {
+      // Create JWKS from your team domain
+      const JWKS = createRemoteJWKSet(
+        new URL(`${env.TEAM_DOMAIN}/cdn-cgi/access/certs`)
+      );
+
+      // Verify the JWT
+      const { payload } = await jwtVerify(token, JWKS, {
+        issuer: env.TEAM_DOMAIN,
+        audience: env.POLICY_AUD,
+      });
+    } catch (error) {
+      // Token verification failed
+      const message = error instanceof Error ? error.message : "Unknown error";
+      return new Response(`Invalid token: ${message}`, {
+        status: 403,
+        headers: { "Content-Type": "text/plain" },
+      });
+    }
+
+    return (
+      (await routeAgentRequest(request, env)) ||
+      new Response("Not found", { status: 404 })
+    );
+  },
+} satisfies ExportedHandler<Env>;
