@@ -6,7 +6,7 @@ import { jwtVerify, createRemoteJWKSet } from "jose";
 export class MyAgent extends Think<Env> {
   getModel() {
     return createWorkersAI({ binding: this.env.AI })(
-      "@cf/meta/llama-3.2-1b-instruct",
+      "@cf/moonshotai/kimi-k2.6",
     );
   }
 }
@@ -32,11 +32,10 @@ export default {
       });
     }
 
-
     try {
       // Create JWKS from your team domain
       const JWKS = createRemoteJWKSet(
-        new URL(`${env.TEAM_DOMAIN}/cdn-cgi/access/certs`)
+        new URL(`${env.TEAM_DOMAIN}/cdn-cgi/access/certs`),
       );
 
       // Verify the JWT
