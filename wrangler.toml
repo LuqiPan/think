@@ -20,7 +20,7 @@ head_sampling_rate = 1
 POLICY_AUD = "297465c25a8782649ded486831360fdf0ad8e23d0165d35243617198c59d702a"
 TEAM_DOMAIN = "https://luqi.cloudflareaccess.com"
 AI_GATEWAY_ID = "think"
-AI_GATEWAY_MODEL = "workers-ai/@cf/moonshotai/kimi-k2.6"
+AI_GATEWAY_MODEL = "@cf/moonshotai/kimi-k2.6"
 
 [ai]
 binding = "AI"
