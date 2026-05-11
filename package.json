@@ -12,13 +12,7 @@
   "keywords": [],
   "author": "",
   "license": "",
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "^11.0.9",
-      "onFail": "download"
-    }
-  },
+  "packageManager": "pnpm@11.0.9",
   "type": "module",
   "devDependencies": {
     "@cloudflare/ai-chat": "^0.6.2",
